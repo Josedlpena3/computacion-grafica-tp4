@@ -41,7 +41,6 @@ class Scene:
         for obj in self.objects:
             if obj.animated:
                 obj.rotation += glm.vec3(0.8, 0.6, 0.4)
-                obj.position.x += math.sin(self.time) * 0.01
 
             model = obj.get_model_matrix()
             mvp = self.projection * self.view * model
