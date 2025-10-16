@@ -7,10 +7,11 @@ from camera import Camera
 from cube import Cube
 from quad import Quad
 
-WIDTH, HEIGHT = 800, 600
 
+WIDTH, HEIGHT = 800, 600
 SCENE_TYPE = "normal"  # Opciones: "normal", "cpu", "gpu"
 
+# Configuración visual y técnica por tipo de escena
 scene_configs = {
     "normal": {
         "needs_sprite": False,
@@ -31,27 +32,46 @@ scene_configs = {
 
 config = scene_configs[SCENE_TYPE]
 
+
 window = Window(WIDTH, HEIGHT, f"Basic Graphic Engine - {SCENE_TYPE.upper()}")
 
+# Shaders principales (objeto y sprite)
 shader = ShaderProgram(window.ctx, '../shaders/basic.vert', '../shaders/basic.frag')
 shader_sprite = ShaderProgram(window.ctx, '../shaders/sprite.vert', '../shaders/sprite.frag')
+
 
 albedo_red = Texture("u_texture", WIDTH, HEIGHT, 3, None, (200, 10, 190))
 albedo_blue = Texture("u_texture", WIDTH, HEIGHT, 3, None, (0, 0, 255))
 albedo_pearl = Texture("u_texture", WIDTH, HEIGHT, 3, None, (120, 90, 90))
-sprite_texture = Texture(width=WIDTH, height=HEIGHT, channels_amount=config["sprite_channels_amount"], color=config["sprite_default_color"])
+
+sprite_texture = Texture(
+    width=WIDTH,
+    height=HEIGHT,
+    channels_amount=config["sprite_channels_amount"],
+    color=config["sprite_default_color"]
+)
 
 material_plastic = StandardMaterial(shader, albedo_red, reflectivity=0.0)
 material_glass = StandardMaterial(shader, albedo_blue, reflectivity=0.2)
 material_ceramic = StandardMaterial(shader, albedo_pearl, reflectivity=0.1)
 material_sprite = Material(shader_sprite, textures_data=[sprite_texture])
 
-cube1 = Cube((2, 0, 5), (0, 0, 0), (1, 1, 1), name="Cube1")
-cube2 = Cube((-2, 0, 5), (0, 0, 0), (1, 1, 1), name="Cube2")
+cube1 = Cube((-2, 0, 5), (0, 0, 0), (1, 1, 1), name="Cube1")
+cube2 = Cube((2, 0, 5), (0, 0, 0), (1, 1, 1), name="Cube2")
 quad = Quad((0, -3, 0), (90, 0, 0), (10, 15, 1), name="Floor", animated=False)
 sprite = Quad((0, 0, 0), (0, 0, 0), (10, 15, 1), name="Sprite", animated=False, hittable=False)
 
-camera = Camera((0, 0, 15), (0, 0, 0), (0, 1, 0), 45, WIDTH / HEIGHT, 0.01, 100.0)
+
+camera = Camera(
+    position=(0, 0, 15),
+    target=(0, 0, 0),
+    up=(0, 1, 0),
+    fov=45,  
+    aspect=WIDTH / HEIGHT,
+    near=0.01,
+    far=100.0
+)
+
 camera.set_sky_colors(top=(16, 150, 222), bottom=(181, 224, 247))
 
 if SCENE_TYPE == "normal":
@@ -71,6 +91,7 @@ elif SCENE_TYPE == "gpu":
     scene.add_object(cube1, material_plastic)
     scene.add_object(cube2, material_glass)
     scene.add_object(quad, material_ceramic)
+
 
 window.set_scene(scene)
 window.run()
